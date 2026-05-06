@@ -80,7 +80,8 @@ static void tick(void *context) {
   int curr_phase = s_elapsed / PHASE_MS;
 
   if (curr_phase != prev_phase) {
-    vibes_short_pulse();
+    static const uint32_t tap[] = {80};
+    vibes_enqueue_custom_pattern((VibePattern){.durations = tap, .num_segments = 1});
   }
 
   layer_mark_dirty(s_canvas);
@@ -101,7 +102,8 @@ static void window_load(Window *window) {
   layer_set_update_proc(s_canvas, canvas_update);
   layer_add_child(root, s_canvas);
 
-  vibes_short_pulse();
+  static const uint32_t tap[] = {80};
+  vibes_enqueue_custom_pattern((VibePattern){.durations = tap, .num_segments = 1});
   s_timer = app_timer_register(TICK_MS, tick, NULL);
 }
 
