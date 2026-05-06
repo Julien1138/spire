@@ -23,9 +23,11 @@ static void timer_cb(void *context) {
 
   int cycle_ms = s_state.elapsed_ms % (PHASE_MS * 2);
   s_state.inhaling = (cycle_ms < PHASE_MS);
-  s_state.frac = s_state.inhaling
-    ? (cycle_ms * 1000) / PHASE_MS
-    : ((PHASE_MS * 2 - cycle_ms) * 1000) / PHASE_MS;
+
+  // Sinusoidal easing: decelerates at both extremes, no jerk at phase boundary
+  int32_t angle   = (int32_t)TRIG_MAX_ANGLE * cycle_ms / (PHASE_MS * 2);
+  int32_t cos_val = cos_lookup(angle);
+  s_state.frac    = (int)((TRIG_MAX_RATIO - cos_val) * 500 / TRIG_MAX_RATIO);
 
   if (s_state.elapsed_ms >= TOTAL_MS) {
     s_state.finished = true;
