@@ -1,5 +1,6 @@
 #include "breathing_window.h"
 #include "breathing.h"
+#include "done_window.h"
 #include <pebble.h>
 
 static Window *s_window;
@@ -62,6 +63,9 @@ static void canvas_update(Layer *layer, GContext *ctx) {
 
 static void on_tick(void *context) {
   layer_mark_dirty(s_canvas);
+  if (breathing_get_state()->finished) {
+    done_window_push();
+  }
 }
 
 static void window_load(Window *window) {
